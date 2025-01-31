@@ -75,15 +75,15 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWQtcmF5eWFuLTA0IiwiYSI6ImNtNmtvZWN0aTAwOXcya
 
 const map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/light-v11',
+    style: 'mapbox://styles/md-rayyan-04/cm6krbzyi00cw01s96iuq3r36',
     center: [0, 20],
     zoom: 2
 });
 
 // Coordinates display
 map.on('mousemove', (e) => {
-    document.getElementById('lat').textContent = e.lngLat.lat.toFixed(2);
-    document.getElementById('lng').textContent = e.lngLat.lng.toFixed(2);
+    document.getElementById('latitude').textContent = e.lngLat.lat.toFixed(2);
+    document.getElementById('longitude').textContent = e.lngLat.lng.toFixed(2);
 });
 
 // Cities data
