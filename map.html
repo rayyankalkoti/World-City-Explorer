@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Global Tourism Hotspots 2023</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    
+    <!-- Styles -->
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { height: 100vh; width: 100vw; }
+        .coord-info {
+            position: fixed; bottom: 20px; right: 20px; 
+            background: rgba(255,255,255,0.9); padding: 10px;
+            border-radius: 5px; box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            font-family: Arial, sans-serif; z-index: 999;
+        }
+        .globe-indicator {
+            position: fixed; top: 20px; left: 20px;
+            background: rgba(255,255,255,0.9); padding: 10px 15px;
+            border-radius: 20px; box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            z-index: 999; font-family: Arial, sans-serif;
+        }
+        .map-title {
+            position: fixed; top: 20px; width: 100%;
+            text-align: center; font-size: 24px; font-weight: bold;
+            color: #333; text-shadow: 0 0 5px rgba(255,255,255,0.8);
+            z-index: 999;
+        }
+        .mapboxgl-popup-content {
+            font-family: Arial, sans-serif;
+            padding: 15px;
+            min-width: 200px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+        }
+        .popup-header {
+            font-size: 16px; font-weight: bold;
+            margin-bottom: 8px; color: #2c3e50;
+        }
+        .popup-stats { font-size: 14px; color: #34495e; }
+        .rank-badge {
+            background: #e74c3c; color: white;
+            padding: 2px 8px; border-radius: 3px;
+            margin-right: 5px;
+        }
+        .marker {
+            background-size: cover;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+    </style>
+    
+    <!-- Mapbox GL JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+</head>
+<body>
+    <div class="map-title">Globe 2025</div>
+    <div class="globe-indicator"><i class="fas fa-globe-americas"></i> World Map</div>
+    <div id="map"></div>
+    <div class="coord-info">
+        <i class="fas fa-map-marker-alt"></i> 
+        Lat: <span id="lat">0.00</span>°, 
+        Lng: <span id="lng">0.00</span>°
+    </div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoibWQtcmF5eWFuLTA0IiwiYSI6ImNtNmtvZWN0aTAwOXcyaW9xenp4d3pqYmEifQ.5tnD481rFb6OmHTpi2ujCA';
+
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/light-v11',
+    center: [0, 20],
+    zoom: 2
+});
+
+// Coordinates display
+map.on('mousemove', (e) => {
+    document.getElementById('lat').textContent = e.lngLat.lat.toFixed(2);
+    document.getElementById('lng').textContent = e.lngLat.lng.toFixed(2);
+});
+
+// Cities data
+const cities = [
+{ name: "Bangkok", coords: [100.5018, 13.7563], visitors: "22.78M", rank: 1 },
+{ name: "Paris", coords: [2.3522, 48.8566], visitors: "19.10M", rank: 2 },
+{ name: "London", coords: [-0.1278, 51.5074], visitors: "19.09M", rank: 3 },
+{ name: "Dubai", coords: [55.2708, 25.2048], visitors: "15.93M", rank: 4 },
+{ name: "Singapore", coords: [103.8198, 1.3521], visitors: "14.67M", rank: 5 },
+{ name: "Kuala Lumpur", coords: [101.6869, 3.1390], visitors: "13.79M", rank: 6 },
+{ name: "New York", coords: [-74.0060, 40.7128], visitors: "13.60M", rank: 7 },
+{ name: "Istanbul", coords: [28.9784, 41.0082], visitors: "13.40M", rank: 8 },
+{ name: "Tokyo", coords: [139.6917, 35.6895], visitors: "12.93M", rank: 9 },
+{ name: "Antalya", coords: [30.7133, 36.8969], visitors: "12.41M", rank: 10 },
+{ name: "Seoul", coords: [126.9780, 37.5665], visitors: "11.25M", rank: 11 },
+{ name: "Osaka", coords: [135.5022, 34.6937], visitors: "10.80M", rank: 12 },
+{ name: "Makkah", coords: [39.8262, 21.3891], visitors: "10.00M", rank: 13 },
+{ name: "Phuket", coords: [98.3981, 7.8804], visitors: "9.89M", rank: 14 },
+{ name: "Pattaya", coords: [100.8850, 12.9236], visitors: "9.44M", rank: 15 },
+{ name: "Barcelona", coords: [2.1734, 41.3851], visitors: "9.09M", rank: 16 },
+{ name: "Milan", coords: [9.1900, 45.4642], visitors: "8.81M", rank: 17 },
+{ name: "Bali", coords: [115.1889, -8.4095], visitors: "8.26M", rank: 18 },
+{ name: "Hong Kong", coords: [114.1694, 22.3193], visitors: "7.91M", rank: 19 },
+{ name: "Amsterdam", coords: [4.8952, 52.3702], visitors: "7.83M", rank: 20 }
+];
+
+
+// Marker color scheme
+const rankColors = {
+    1: '#e74c3c',
+    2: '#e67e22',
+    3: '#f1c40f',
+    4: '#2ecc71',
+    5: '#3498db'
+};
+
+// Add markers
+cities.forEach(city => {
+    const color = city.rank <= 5 ? rankColors[city.rank] : '#3498db';
+    const size = 25 + (20 - city.rank) * 0.5;
+    
+    // Create marker element
+    const el = document.createElement('div');
+    el.className = 'marker';
+    el.style.backgroundColor = color;
+    el.style.width = `${size}px`;
+    el.style.height = `${size}px`;
+    
+    // Create popup
+    const popup = new mapboxgl.Popup({ offset: 25 })
+        .setHTML(`
+            <div class="popup-header">
+                <span class="rank-badge">#${city.rank}</span>
+                ${city.name}
+            </div>
+            <div class="popup-stats">
+                <i class="fas fa-users"></i> Visitors: <strong>${city.visitors}</strong>
+            </div>
+        `);
+
+    // Add marker to map
+    new mapboxgl.Marker(el)
+        .setLngLat(city.coords)
+        .setPopup(popup)
+        .addTo(map);
+});
+
+// Add navigation controls
+map.addControl(new mapboxgl.NavigationControl());
+</script>
+</body>
+</html>
